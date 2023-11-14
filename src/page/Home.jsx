@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import Loader from 'components/Loader';
+
 import HomePageLists from '../components/HomePageLists/HomePageLists';
 
 const options = {
@@ -14,16 +16,22 @@ const options = {
 
 export default function HomePage() {
   const [dataHomePage, setDataHomePage] = useState(null);
+  const [loader, setLoader] = useState(null);
+
   useEffect(() => {
     async function getDataAPI() {
       try {
+        setLoader(true);
         const { data } = await axios.get(
           'https://api.themoviedb.org/3/trending/all/day?language=en-US',
           options
         );
+        // console.log(data);
         setDataHomePage(data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoader(null);
       }
     }
 
@@ -32,6 +40,7 @@ export default function HomePage() {
 
   return (
     <div>
+      {loader && <Loader />}
       {dataHomePage && <HomePageLists dataList={dataHomePage.results} />}
     </div>
   );

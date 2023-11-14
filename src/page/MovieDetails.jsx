@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import Loader from 'components/Loader';
 import MovieDetailCard from '../components/MovieDetailCard/MovieDetailCard';
 
 const options = {
@@ -14,12 +15,13 @@ const options = {
 
 export default function MovieDetails() {
   const [dataDetailsCard, setDataHomePage] = useState();
+  const [loader, setLoader] = useState(null);
   const { moviesId } = useParams();
-  console.log(moviesId);
 
   useEffect(() => {
     async function getMovieDetails(param) {
       try {
+        setLoader(true);
         const { data } = await axios.get(
           `https://api.themoviedb.org/3/movie/${param}?language=en-US`,
           options
@@ -27,11 +29,18 @@ export default function MovieDetails() {
         setDataHomePage(data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoader(null);
       }
     }
 
     getMovieDetails(moviesId);
   }, [moviesId]);
 
-  return <MovieDetailCard cardDetails={dataDetailsCard} />;
+  return (
+    <>
+      {loader && <Loader />}
+      <MovieDetailCard cardDetails={dataDetailsCard} />
+    </>
+  );
 }
