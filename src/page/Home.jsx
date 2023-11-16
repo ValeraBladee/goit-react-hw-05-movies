@@ -17,6 +17,7 @@ const options = {
 export default function HomePage() {
   const [dataHomePage, setDataHomePage] = useState(null);
   const [loader, setLoader] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function getDataAPI() {
@@ -29,7 +30,7 @@ export default function HomePage() {
         // console.log(data);
         setDataHomePage(data);
       } catch (error) {
-        console.error(error);
+        setError(error);
       } finally {
         setLoader(null);
       }
@@ -41,6 +42,7 @@ export default function HomePage() {
   return (
     <div>
       {loader && <Loader />}
+      {error && <p>Somesing went wrong...</p>}
       {dataHomePage && <HomePageLists dataList={dataHomePage.results} />}
     </div>
   );

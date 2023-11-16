@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-
+import Loader from 'components/Loader';
 import css from './Cast.module.css';
 
 const options = {
@@ -15,6 +15,8 @@ const options = {
 export default function Cast() {
   const { moviesId } = useParams();
   const [dataCast, setDataCast] = useState();
+  const [loader, setLoader] = useState(null);
+  const [error, setError] = useState(null);
   // console.log(moviesId);
 
   useEffect(() => {
@@ -24,6 +26,7 @@ export default function Cast() {
       }
 
       try {
+        setLoader(true);
         const { data } = await axios.get(
           `https://api.themoviedb.org/3/movie/${moviesId}/credits?language=en-US`,
           options
@@ -31,7 +34,9 @@ export default function Cast() {
         setDataCast(data.cast);
         // console.log(data.cast)
       } catch (error) {
-        console.error(error);
+        setError(error);
+      } finally {
+        setLoader(null);
       }
     }
 
@@ -68,6 +73,8 @@ export default function Cast() {
           ))}
         </ul>
       )}
+      {loader && <Loader />}
+      {error && <p>Somesing went wrong...</p>}
     </div>
   );
 }
