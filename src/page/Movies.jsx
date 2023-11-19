@@ -1,81 +1,58 @@
-import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom'; //? робота з рядком
-import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { fetchSearchByQuery } from 'cat-api';
+import { FormMovie } from 'components/FormMovie/FormMovie';
 
-import Loader from 'components/Loader';
-
-import HomePageLists from '../components/HomePageLists/HomePageLists';
-
-const options = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMmIwMzFhYWNmYjFkYWIyMGEzMzNiZDE0NGU0Njg3OCIsInN1YiI6IjY1NDk0YzBmMWFjMjkyN2IyYzgxNmMxZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.CY3OvlYHRknA-27ebTHqrTp-OgJhbuj4a41Q0rqqOg0',
-  },
-};
-
-export default function Movies() {
-  const form = useRef();
-  const [searchParamsURL, setSearchParamsURL] = useSearchParams();
-  const [dataSearchPar, setDataSearchPar] = useState(null);
-  const [loader, setLoader] = useState(null);
+const Movies = () => {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const query = searchParamsURL.get('query');
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  useEffect(() => {
-    if (!query) {
-      return;
+  const movieId = searchParams.get('movieId') ?? '';
+
+  const updateQueryString = value => {
+    if (value === '') {
+      return setSearchParams({});
     }
-
-    async function getFilmData() {
-      try {
-        setLoader(true);
-        const { data } = await axios.get(
-          `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`,
-          options
-        );
-        setDataSearchPar(data.results);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoader(null);
-      }
-    }
-
-    getFilmData();
-  }, [query]);
-
-  const handleClick = e => {
-    e.preventDefault();
-
-    const forma = form.current;
-    const value = forma.elements.query.value.trim().toLowerCase();
-    if (value) {
-      setSearchParamsURL({ query: value });
-    }
-    forma.reset();
+    setSearchParams({ movieId: value });
   };
 
+  useEffect(() => {
+    if (!movieId) return;
+    const fetchQuery = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchSearchByQuery(movieId);
+        setMovies(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+    fetchQuery();
+  }, [movieId]);
+
   return (
-    <div>
-      <form onSubmit={handleClick} ref={form} action="">
-        <label>
-          <input required name="query" type="text" />
-        </label>
-
-        <button type="submit">Search</button>
-      </form>
-
-      <div>
-        {loader && <Loader />}
-        {error && <p>Somesing went wrong...</p>}
-        {dataSearchPar && dataSearchPar.length > 1 && query && (
-          <div>
-            <HomePageLists dataList={dataSearchPar} />
-          </div>
-        )}
-      </div>
-    </div>
+    <>
+      <FormMovie onSubmit={updateQueryString} />
+      {movies && (
+        <ul>
+          {movies.map(({ id, title }) => (
+            <li key={id}>
+              <Link to={`/movies/${id}`} state={{ from: location }}>
+                {title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+      {error && <p>{error}</p>}
+      {loading && <div>Loading...</div>}
+    </>
   );
-}
+};
+
+export default Movies;

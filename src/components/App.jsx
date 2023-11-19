@@ -1,42 +1,25 @@
-import { Route, NavLink, Routes, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Layout } from './Layout/Layout';
 
-const HomePage = lazy(() => import('../page/Home'));
+const Home = lazy(() => import('../page/Home/Home'));
 const Movies = lazy(() => import('../page/Movies'));
-const MovieDetails = lazy(() => import('../page/MovieDetails'));
-const Loader = lazy(() => import('./Loader'));
+const MovieDetails = lazy(() => import('../page/MovieDetails/MovieDetails'));
+const Cast = lazy(() => import('./Cast'));
+const Reviews = lazy(() => import('./Reviews'));
 
 export const App = () => {
   return (
-    <div>
-      <header className="header">
-        <nav>
-          <ul className="home_page">
-            <li className="home_page_item">
-              <NavLink className="page" to="/">
-                Home
-              </NavLink>
-            </li>
-            <li className="home_page_item">
-              <NavLink className="page" to="/movies">
-                Movies
-              </NavLink>
-            </li>
-          </ul>
-        </nav>
-      </header>
-
-      <main>
-        <Suspense fallback={<Loader />}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/movies" element={<Movies />} />
-            <Route path="/movies/:moviesId/*" element={<MovieDetails />} />
-
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </Suspense>
-      </main>
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="movies" element={<Movies />} />
+        <Route path="movies/:movieId" element={<MovieDetails />}>
+          <Route path="cast" element={<Cast />} />
+          <Route path="reviews" element={<Reviews />} />
+        </Route>
+      </Route>
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 };
