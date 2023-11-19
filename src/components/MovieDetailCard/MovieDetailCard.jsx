@@ -7,7 +7,8 @@ import css from './MovieDetailCard.module.css';
 export default function MovieDetailCard({ cardDetails }) {
   const location = useLocation();
   const backLink = useRef(location.state?.from ?? '/');
-
+  const defaultImg =
+    'https://ireland.apollo.olxcdn.com/v1/files/0iq0gb9ppip8-UA/image;s=1000x700';
   return (
     <>
       {cardDetails && (
@@ -16,13 +17,21 @@ export default function MovieDetailCard({ cardDetails }) {
             Back
           </Link>
           <div className={css.wrapperPage}>
-            <div className={css.wrapperImg}>
-              <img
-                className={css.img}
-                src={`https://image.tmdb.org/t/p/w500${cardDetails.poster_path}`}
-                alt=""
-              />
-            </div>
+            {cardDetails.map(({ poster_path }) => (
+              <div className={css.wrapperImg}>
+                <img
+                  className={css.img}
+                  src={
+                    poster_path
+                      ? [
+                          `https://image.tmdb.org/t/p/w500${cardDetails.poster_path}`,
+                        ]
+                      : defaultImg
+                  }
+                  alt=""
+                />
+              </div>
+            ))}
             <div className={css.wrapperInfo}>
               <h1 className=""> {cardDetails.original_title}</h1>
               <p className="">User score : {cardDetails.vote_average} %</p>

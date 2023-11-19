@@ -16,6 +16,7 @@ const options = {
 export default function MovieDetails() {
   const [dataDetailsCard, setDataHomePage] = useState();
   const [loader, setLoader] = useState(null);
+  const [error, setError] = useState(null);
   const { moviesId } = useParams();
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function MovieDetails() {
         );
         setDataHomePage(data);
       } catch (error) {
-        console.error(error);
+        setError(error);
       } finally {
         setLoader(null);
       }
@@ -40,6 +41,7 @@ export default function MovieDetails() {
   return (
     <>
       {loader && <Loader />}
+      {error && <p>Somesing went wrong...</p>}
       <MovieDetailCard cardDetails={dataDetailsCard} />
     </>
   );

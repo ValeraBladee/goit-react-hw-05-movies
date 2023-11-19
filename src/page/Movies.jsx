@@ -20,6 +20,7 @@ export default function Movies() {
   const [searchParamsURL, setSearchParamsURL] = useSearchParams();
   const [dataSearchPar, setDataSearchPar] = useState(null);
   const [loader, setLoader] = useState(null);
+  const [error, setError] = useState(null);
   const query = searchParamsURL.get('query');
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function Movies() {
         );
         setDataSearchPar(data.results);
       } catch (error) {
-        console.log(error);
+        setError(error);
       } finally {
         setLoader(null);
       }
@@ -68,6 +69,7 @@ export default function Movies() {
 
       <div>
         {loader && <Loader />}
+        {error && <p>Somesing went wrong...</p>}
         {dataSearchPar && dataSearchPar.length > 1 && query && (
           <div>
             <HomePageLists dataList={dataSearchPar} />
