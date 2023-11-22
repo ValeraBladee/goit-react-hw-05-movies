@@ -1,10 +1,18 @@
 import { Route, Routes } from 'react-router-dom';
-import Layout from './Layout/Layout';
-import Cast from './Cast/Cast';
-import Reviews from './Reviews/Reviews';
 import { lazy } from 'react';
+import { Layout } from './Layout/Layout';
 import NotFoundPage from 'pages/NotFoundPage/NotFoundPage';
 
+const Cast = lazy(() =>
+  import('./Cast/Cast').then(module => {
+    return module;
+  })
+);
+const Reviews = lazy(() =>
+  import('./Reviews/Reviews').then(module => {
+    return module;
+  })
+);
 const Home = lazy(() =>
   import('pages/Home/Home').then(module => {
     return module;

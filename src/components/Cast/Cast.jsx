@@ -27,7 +27,7 @@ const Cast = () => {
   }, [movieId]);
 
   const defaultImg =
-    '<https://ireland.apollo.olxcdn.com/v1/files/0iq0gb9ppip8-UA/image;s=1000x700>';
+    'https://ireland.apollo.olxcdn.com/v1/files/0iq0gb9ppip8-UA/image;s=1000x700';
   return (
     <>
       {loading && (
@@ -54,6 +54,7 @@ const Cast = () => {
                 }
                 alt={name}
                 width={200}
+                height={300}
               />
               <h3>{name}</h3>
               <p>Character: {character}</p>
